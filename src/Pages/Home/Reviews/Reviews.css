@@ -1,0 +1,70 @@
+@keyframes moveGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.moving-bg {
+  background: linear-gradient(270deg, #ffffff, #f8f8f8, #eeeeee);
+  background-size: 600% 600%;
+  animation: moveGradient 15s ease infinite;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Add floating blur circles for depth */
+.moving-bg::before,
+.moving-bg::after {
+  content: "";
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #cddfb0 0%, transparent 70%);
+  filter: blur(100px);
+  opacity: 0.4;
+  animation: float 18s ease-in-out infinite alternate;
+}
+
+.moving-bg::before {
+  top: -60px;
+  left: -80px;
+}
+
+.moving-bg::after {
+  bottom: -60px;
+  right: -80px;
+  animation-delay: 6s;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(40px, -20px);
+  }
+  100% {
+    transform: translate(-20px, 40px);
+  }
+}
+
+/* Responsive Tweaks */
+@media (max-width: 900px) {
+  .moving-bg {
+    background-size: 400% 400%;
+    animation-duration: 18s;
+  }
+}
+
+@media (max-width: 600px) {
+  .moving-bg {
+    padding: 60px 20px;
+  }
+}
