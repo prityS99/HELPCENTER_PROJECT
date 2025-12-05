@@ -1,9 +1,8 @@
 import { Box, Container, TextField, Typography, Button, Stack } from "@mui/material";
 import { useState } from "react";
-import { motion, type Variants } from "framer-motion"; // <-- Import Variants here
+import { motion, type Variants } from "framer-motion"; 
 import bg from "../../assets/Contactus/bg.jpg"
 
-// 1. Parent Variant: Defines the staggered sequence
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -14,7 +13,7 @@ const containerVariants: Variants = {
   },
 };
 
-// 2. Child Variant: Defines the animation for each input field
+
 const itemVariants: Variants = {
   hidden: { y: 20, opacity: 0 },
   visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
@@ -37,7 +36,7 @@ const ContactUs = () => {
     setFormData({ name: "", email: "", message: "" });
   };
 
-  // The fadeInUp for the heading is still good as a separate animation
+  
   const fadeInUp: Variants = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
@@ -57,7 +56,7 @@ const ContactUs = () => {
 
 
  <Container maxWidth="md" >
-      {/* Title (Keeps simple fadeInUp animation) */}
+     
       <motion.div
         variants={fadeInUp}
         initial="hidden"
@@ -90,12 +89,12 @@ const ContactUs = () => {
         </Typography>
       </motion.div>
 
-      {/* Form Card (Now the PARENT for the staggered animation) */}
+    
       <motion.div
-        variants={containerVariants} // <-- Parent variant applied here
+        variants={containerVariants} 
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.1 }} // Less strict requirement for visibility
+        viewport={{ once: true, amount: 0.1 }} 
       >
         <Box
           component="form"
@@ -107,10 +106,10 @@ const ContactUs = () => {
             boxShadow: "0px 6px 20px rgba(0, 0, 0, 0.1)",
           }}
         >
-          {/* We use a motion.div for the Stack to correctly apply child staggering */}
+       
           <Stack spacing={3} component={motion.div}> 
             
-            {/* Child 1: Name Field */}
+            {/* Name Field */}
             <motion.div variants={itemVariants}> 
               <TextField
                 fullWidth
@@ -122,7 +121,7 @@ const ContactUs = () => {
               />
             </motion.div>
 
-            {/* Child 2: Email Field */}
+            {/* Email Field */}
             <motion.div variants={itemVariants}>
               <TextField
                 fullWidth
@@ -135,7 +134,7 @@ const ContactUs = () => {
               />
             </motion.div>
 
-            {/* Child 3: Message Field */}
+            {/* Message Field */}
             <motion.div variants={itemVariants}>
               <TextField
                 fullWidth
@@ -149,7 +148,7 @@ const ContactUs = () => {
               />
             </motion.div>
 
-            {/* Child 4: Submit Button */}
+            {/* Submit Button */}
             <motion.div variants={itemVariants}>
               <Button
                 type="submit"
@@ -168,7 +167,7 @@ const ContactUs = () => {
         </Box>
       </motion.div>
 
-      {/* Map Section (Keeps simple fadeInUp animation) */}
+      {/* Map Section  */}
       <motion.div
         variants={fadeInUp}
         initial="hidden"

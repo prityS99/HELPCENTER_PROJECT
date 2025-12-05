@@ -47,7 +47,7 @@ const Navbar = () => {
 
   const menuItems = [
     { name: "Home", link: "/home" },
-    { name: "Counselors List", link: "/councelorsList" },
+    { name: "Counselors List", link: "/counselors" },
     { name: "Therapies", link: "/therapies" },
     { name: "Plans and Pricing", link: "/planspricing" },
     { name: "Contact", link: "/contactus" },

@@ -7,12 +7,7 @@ export interface Appointment {
   booking_time?: string;
   booking_status?: string;
   amount?: number;
-  payment_status?: string;
-  payment_method?: string;
-  transaction_id?: string;
-  created_at?: string;
-  email?: string;
-  phone?: string;
+
 }
 
 

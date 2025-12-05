@@ -20,7 +20,7 @@ const initialState: userState = {
   role: null,
 };
 
-// --- Helper to get user role ---
+
 async function fetchUserRole(userId: string): Promise<"admin" | "user"> {
   const { data, error } = await supabase
     .from("profiles")

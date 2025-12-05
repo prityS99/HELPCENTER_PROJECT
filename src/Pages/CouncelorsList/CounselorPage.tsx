@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useMemo } from "react";
 import {
   Box,
@@ -10,9 +9,16 @@ import {
   Grow,
   useTheme,
   Grid,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Divider,
+  Stack,
 } from "@mui/material";
 import { useInView } from "react-intersection-observer";
 import CounselorPageCard from "../../Components/Card/CouncelorsPageCard";
+import CloseIcon from "@mui/icons-material/Close";
 
 import doc1 from "../../assets/Councelors/doc 1.png";
 import doc2 from "../../assets/Councelors/doc 2.jpg";
@@ -26,9 +32,7 @@ import doc9 from "../../assets/Councelors/doc 9.png";
 import doc10 from "../../assets/Councelors/doc 10.png";
 import doc11 from "../../assets/Councelors/doc 11.jpg";
 import doc12 from "../../assets/Councelors/doc 12.png";
-// import doc13 from "../../assets/Councelors/doc 13.png";
-// import doc14 from "../../assets/Councelors/doc 14.png";
-// import doc15 from "../../assets/Councelors/doc 15.png";
+
 import bg from "../../assets/Councelors/bg.jpg";
 
 const counselors = [
@@ -37,9 +41,12 @@ const counselors = [
     name: "Dr. Ananya Sen",
     degree: "PhD, Clinical Psychology",
     specialization: "Clinical Psychologist",
+    experience: "10+ years of experience in adult therapy and trauma recovery.",
+    description:
+      "Dr. Sen specializes in cognitive  behavioral therapy and emotional resilience building. She’s known for her empathetic yet practical approach to mental wellness.",
     image: doc1,
-    availableDate: "2025-11-05",
-    availableTime: "11:00 AM",
+    availableDate: "20-11-2025",
+    availableTime: "11:00 to 4:00pm",
     category: "Clinical",
   },
   {
@@ -47,9 +54,12 @@ const counselors = [
     name: "Ms. Arpita Roy",
     degree: "M.A. Counseling",
     specialization: "Counseling Psychologist",
+    experience: "8 years of experience in stress and anxiety management.",
+    description:
+      "Ms. Roy focuses on helping clients find clarity in life’s complexities through mindful communication and self-compassion techniques.",
     image: doc2,
-    availableDate: "2025-11-07",
-    availableTime: "4:30 PM",
+      availableDate: "19-11-2025",
+    availableTime: "11:00 to 4:00pm",
     category: "Counseling",
   },
   {
@@ -57,103 +67,136 @@ const counselors = [
     name: "Mr. Arjun Das",
     degree: "M.A. Child Psychology",
     specialization: "Child & Adolescent Therapist",
+    experience: "7 years working with school-aged children and parents.",
+    description:
+      "Mr. Das creates engaging, trust-based therapy sessions for children dealing with anxiety, social challenges, and behavioral concerns.",
     image: doc3,
-    availableDate: "2025-11-05",
-    availableTime: "10:00 AM",
+       availableDate: "28-11-2025",
+    availableTime: "12:00 to 4:00pm",
     category: "Child",
   },
+   
     {
     id: 4,
-    name: "Mr. Arjun Das",
+    name: "Dr. Neha Kapoor",
     degree: "M.A. Child Psychology",
     specialization: "Child & Adolescent Therapist",
+    experience: "7 years working with school-aged children and parents.",
+    description:
+     "Dr. Neha helps families navigate communication barriers and emotional challenges with warmth and clarity.",
     image: doc4,
-    availableDate: "2025-11-05",
-    availableTime: "10:00 AM",
-    category: "Child",
-  },
-    {
-    id: 5,
-    name: "Mr. Arjun Das",
-    degree: "M.A. Child Psychology",
-    specialization: "Child & Adolescent Therapist",
-    image: doc5,
-    availableDate: "2025-11-05",
-    availableTime: "10:00 AM",
-    category: "Child",
-  },
-    {
-    id: 6,
-    name: "Mr. Arjun Das",
-    degree: "M.A. Child Psychology",
-    specialization: "Child & Adolescent Therapist",
-    image: doc6,
-    availableDate: "2025-11-05",
-    availableTime: "10:00 AM",
-    category: "Child",
-  },
-    {
-    id: 7,
-    name: "Mr. Arjun Das",
-    degree: "M.A. Child Psychology",
-    specialization: "Child & Adolescent Therapist",
-    image: doc7,
-    availableDate: "2025-11-05",
-    availableTime: "10:00 AM",
-    category: "Child",
-  },
-    {
-    id: 8,
-    name: "Mr. Arjun Das",
-    degree: "M.A. Child Psychology",
-    specialization: "Child & Adolescent Therapist",
-    image: doc8,
-    availableDate: "2025-11-05",
-    availableTime: "10:00 AM",
-    category: "Child",
-  },
-    {
-    id: 9,
-    name: "Mr. Arjun Das",
-    degree: "M.A. Child Psychology",
-    specialization: "Child & Adolescent Therapist",
-    image: doc9,
-    availableDate: "2025-11-05",
-    availableTime: "10:00 AM",
-    category: "Child",
-  },
-    {
-    id: 10,
-    name: "Mr. Arjun Das",
-    degree: "M.A. Child Psychology",
-    specialization: "Child & Adolescent Therapist",
-    image: doc10,
-    availableDate: "2025-11-05",
-    availableTime: "10:00 AM",
-    category: "Child",
-  },
-    {
-    id: 11,
-    name: "Mr. Arjun Das",
-    degree: "M.A. Child Psychology",
-    specialization: "Child & Adolescent Therapist",
-    image: doc11,
-    availableDate: "2025-11-05",
-    availableTime: "10:00 AM",
-    category: "Child",
-  },
-    {
-    id: 12,
-    name: "Mr. Arjun Das",
-    degree: "M.A. Child Psychology",
-    specialization: "Child & Adolescent Therapist",
-    image: doc12,
-    availableDate: "2025-11-05",
-    availableTime: "10:00 AM",
+      availableDate: "25-11-2025",
+    availableTime: "10:00 to 1:00pm",
     category: "Child",
   },
 
-];
+    {
+    id: 5,
+    name: "Dr. Suresh Mehta",
+    degree: "M.A. Child Psychology",
+    specialization: "Child & Adolescent Therapist",
+    experience: "7 years working with school-aged children and parents.",
+    description:
+     "Suresh uses mindfulness and evidence-based methods to help clients overcome anxiety, stress, and burnout.",
+    image: doc5,
+      availableDate: "20-11-2025",
+    availableTime: "11:00 to 4:00pm",
+    category: "Child",
+  },
+      {
+    id: 6,
+    name: "Dr. Arpita Sharma",
+    degree: "M.A. Child Psychology",
+    specialization: "Child & Adolescent Therapist",
+    experience: "7 years working with school-aged children and parents.",
+    description:
+     "Dr. Neha helps families navigate communication barriers and emotional challenges with warmth and clarity.",
+    image: doc6,
+      availableDate: "20-11-2025",
+    availableTime: "11:00 to 4:00pm",
+    category: "Child",
+  },
+      {
+    id: 7,
+    name: "Dr. Aisha Kapoor",
+    degree: "M.A. Child Psychology",
+    specialization: "Child & Adolescent Therapist",
+    experience: "7 years working with school-aged children and parents.",
+    description:
+     "Dr. Neha helps families navigate communication barriers and emotional challenges with warmth and clarity.",
+    image: doc7,
+        availableDate: "20-11-2025",
+    availableTime: "11:00 to 4:00pm",
+    category: "Child",
+  },
+      {
+    id: 8,
+    name: "Dr. Kunal Kapoor",
+    degree: "M.A. Child Psychology",
+    specialization: "Child & Adolescent Therapist",
+    experience: "7 years working with school-aged children and parents.",
+    description:
+     "Dr. Kunal helps families navigate communication barriers and emotional challenges with warmth and clarity.",
+    image: doc8,
+     availableDate: "20-11-2025",
+    availableTime: "11:00 to 4:00pm",
+    category: "Child",
+  },
+      {
+    id: 9,
+    name: "Dr. Surbhi Jain",
+    degree: "M.A. Child Psychology",
+    specialization: "Child & Adolescent Therapist",
+    experience: "7 years working with school-aged children and parents.",
+    description:
+     "Dr. Arvind helps families navigate communication barriers and emotional challenges with warmth and clarity.",
+    image: doc9,
+      availableDate: "20-11-2025",
+    availableTime: "11:00 to 4:00pm",
+    category: "Child",
+  },
+      {
+    id: 10,
+    name: "Dr. Arvind Jain",
+    degree: "M.A. Child Psychology",
+    specialization: "Child & Adolescent Therapist",
+    experience: "7 years working with school-aged children and parents.",
+    description:
+     "Dr. Arvind helps families navigate communication barriers and emotional challenges with warmth and clarity.",
+    image: doc10,
+    availableDate: "20-11-2025",
+    availableTime: "11:00 to 4:00pm",
+    category: "Child",
+  },
+      {
+    id: 11,
+    name: "Dr. Meena Kapoor",
+    degree: "M.A. Child Psychology",
+    specialization: "Child & Adolescent Therapist",
+    experience: "7 years working with school-aged children and parents.",
+    description:
+     "Dr. Neha helps families navigate communication barriers and emotional challenges with warmth and clarity.",
+    image: doc11,
+     availableDate: "23-11-2025",
+    availableTime: "11:00 to 4:00pm",
+    category: "Child",
+  },
+        {
+    id: 12,
+    name: "Dr. Prity Saha",
+    degree: "M.A. Child Psychology",
+    specialization: "Child & Adolescent Therapist",
+    experience: "7 years working with school-aged children and parents.",
+    description:
+     "Dr. Prity helps families navigate communication barriers and emotional challenges with warmth and clarity.",
+    image: doc12,
+        availableDate: "15-11-2025",
+    availableTime: "11:00 to 4:00pm",
+    category: "Child",
+  },
+    
+
+]
 
 const therapyCategories = [
   "All",
@@ -166,15 +209,16 @@ const therapyCategories = [
   "Career",
 ];
 
-const AllCouncelors: React.FC = () => {
+const CounselorPage: React.FC = () => {
   const theme = useTheme();
-  const isDark = theme.palette.mode === "dark";
-
   const [searchText, setSearchText] = useState("");
   const [category, setCategory] = useState("All");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedCounselor, setSelectedCounselor] = useState<any>(null);
 
   const focusSearch = () => searchRef.current?.focus();
 
@@ -196,6 +240,16 @@ const AllCouncelors: React.FC = () => {
     setDate("");
     setTime("");
     focusSearch();
+  };
+
+  const handleViewProfile = (counselor: any) => {
+    setSelectedCounselor(counselor);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedCounselor(null);
   };
 
   return (
@@ -253,7 +307,7 @@ const AllCouncelors: React.FC = () => {
             backdropFilter: "blur(6px)",
           }}
         >
-          <Grid container spacing={3}>
+          <Grid container spacing={5}>
             <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
@@ -328,19 +382,11 @@ const AllCouncelors: React.FC = () => {
             });
 
             return (
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                md={4}
-                lg={3}
-                key={counselor.id}
-                ref={ref}
-              >
+              <Grid item xs={12} sm={6} md={4} lg={3} key={counselor.id} ref={ref}>
                 <Grow in={inView} timeout={800 + index * 100}>
                   <div>
                     <CounselorPageCard
-                    id={counselor.id}
+                      id={counselor.id}
                       name={counselor.name}
                       degree={counselor.degree}
                       specialization={counselor.specialization}
@@ -348,6 +394,7 @@ const AllCouncelors: React.FC = () => {
                       date={counselor.availableDate}
                       time={counselor.availableTime}
                       showButtons
+                      onCardClick={() => handleViewProfile(counselor)}
                     />
                   </div>
                 </Grow>
@@ -357,18 +404,84 @@ const AllCouncelors: React.FC = () => {
         </Grid>
 
         {filteredCounselors.length === 0 && (
-          <Typography
-            textAlign="center"
-            mt={5}
-            color="gray"
-            fontStyle="italic"
-          >
+          <Typography textAlign="center" mt={5} color="gray" fontStyle="italic">
             No doctors found matching your filters.
           </Typography>
         )}
       </Container>
+
+      {/* ✨ Counselor Detail Dialog */}
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            p: 2,
+            backgroundColor: "rgba(255,255,255,0.95)",
+          },
+        }}
+      >
+        <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography variant="h6" sx={{ fontFamily: "'Cambria', serif", fontWeight: "bold" }}>
+            Counselor Profile
+          </Typography>
+          <IconButton onClick={handleCloseDialog}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <Divider />
+
+        <DialogContent>
+          {selectedCounselor && (
+            <Stack
+              direction={{ xs: "column", md: "row" }}
+              spacing={3}
+              sx={{ alignItems: "center", mt: 2 }}
+            >
+              <Box
+                component="img"
+                src={selectedCounselor.image}
+                alt={selectedCounselor.name}
+                sx={{
+                  width: { xs: "100%", md: "45%" },
+                  borderRadius: 3,
+                  boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
+                }}
+              />
+
+              <Box>
+                <Typography
+                  variant="h5"
+                  sx={{ fontWeight: "bold", mb: 1, fontFamily: "'Cambria', serif" }}
+                >
+                  {selectedCounselor.name}
+                </Typography>
+                <Typography sx={{ color: "text.secondary", mb: 1 }}>
+                  {selectedCounselor.degree}
+                </Typography>
+                <Typography sx={{ color: "#0b5487ff", mb: 2 }}>
+                  {selectedCounselor.specialization}
+                </Typography>
+                <Typography sx={{ mb: 2 }}>
+                  <strong>Experience:</strong> {selectedCounselor.experience}
+                </Typography>
+                <Typography sx={{ mb: 2, fontStyle: "italic" }}>
+                  {selectedCounselor.description}
+                </Typography>
+                <Typography sx={{ fontWeight: "bold", mt: 1 }}>
+                  Available: {selectedCounselor.availableDate} at{" "}
+                  {selectedCounselor.availableTime}
+                </Typography>
+              </Box>
+            </Stack>
+          )}
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };
 
-export default AllCouncelors;
+export default CounselorPage;

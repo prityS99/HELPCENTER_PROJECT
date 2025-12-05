@@ -98,7 +98,7 @@ const navigate = useNavigate();
           <Button
             variant="contained"
             size="large"
-            onClick={()=> navigate('/councelorslist')}
+            onClick={()=> navigate('/counselors')}
           
             sx={{
               bgcolor: '#5c9924ff',

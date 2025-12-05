@@ -2,7 +2,6 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from "../Pages/Home/Home";
 import Wrapper from "../Layout/Wrapper";
 import ContactUs from "../Pages/ContactUs/ContactUs";
-import AllCouncelors from "../Pages/CouncelorsList/AllCounselors";
 import PlansPricing from "../Pages/Plans and Pricing/PlansPricing";
 import TherapyPage from "../Pages/TherapyPage/TherapyPage";
 import LoginPage from "../Pages/Login";
@@ -11,10 +10,9 @@ import ProtectedRoute from "../Components/ProtectedRoute";
 import AppointmentForm from "../Pages/AppointmentForm";
 import WrapperAdmin from "../Pages/Admin/WrapperAdmin";
 import Dashboard from "../Pages/Admin/Dashboard";
-import CouncelorsList from "../Pages/Admin/AddCouncelor";
 import TherapiesList from "../Pages/Admin/TherapiesList";
-import CounselorDetails from "../Pages/CouncelorsList/CouncelorsDetails";
 import AddCounselor from "../Pages/Admin/AddCouncelor";
+import CounselorPage from "../Pages/CouncelorsList/CounselorPage";
 
 
 
@@ -25,8 +23,7 @@ const Routes = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "home", element: <Home /> },
-      { path: "councelorslist", element: <AllCouncelors /> },
-      { path: "coucelors/:id", element: <CounselorDetails/>  },
+      { path: "counselors", element: <CounselorPage /> },
       { path: "therapies", element: <TherapyPage /> },
       { path: "planspricing", element: <PlansPricing /> },
       { path: "contactus", element: <ContactUs /> },
@@ -50,7 +47,7 @@ const Routes = createBrowserRouter([
     ),
     children: [
       { path: "dashboard", element: <Dashboard /> },
-      { path: "councelors", element: <AddCounselor/> },
+      { path: "councelors", element: <AddCounselor /> },
       { path: "therapies", element: <TherapiesList /> },
     ],
   },

@@ -7,9 +7,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
-import bg from "../assets/BookForm/bg.jpg";
+import bg from "../assets/BookForm/bg.jpg"; 
+import Payment from "./Payment";
+import PaymentHandler from "./PaymentHandler";
 import { supabase } from "../lib/supabaseClients";
 
 const AppointmentForm: React.FC = () => {
@@ -17,218 +18,166 @@ const AppointmentForm: React.FC = () => {
   const [counselor, setCounselor] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  // 👉 Razorpay script loader
-  const loadRazorpay = () => {
-    return new Promise((resolve) => {
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
+  const [openPayment, setOpenPayment] = useState(false);
+  const [amount] = useState(500);
+  const [openHandler, setOpenHandler] = useState(false);
+  const handleConfirmPayment = () => {
+    setOpenPayment(false);
+    setOpenHandler(true);
   };
 
-  const handlePayment = async () => {
-    const res = await loadRazorpay();
-    if (!res) {
-      toast.error("Razorpay SDK failed to load.");
-      return;
-    }
-
-    const amount = 500; // 💰 you can make this dynamic later
-
-    const options = {
-      key: "rzp_test_YourKeyID", // Replace with your Razorpay key
-      amount: amount * 100, // in paise
-      currency: "INR",
-      name: "MindEase Counseling",
-      description: "Appointment Payment",
-      image:
-        "https://upload.wikimedia.org/wikipedia/commons/6/6a/Razorpay_logo.svg",
-      handler: async function (response: any) {
-        // After successful payment, save to Supabase
-        await saveAppointment(response);
-      },
-      prefill: {
-        name: patientName,
-        email: "user@example.com",
-        contact: "9999999999",
-      },
-      notes: {
-        counselor_name: counselor,
-      },
-      theme: { color: "#3399cc" },
-    };
-
-    const paymentObject = new (window as any).Razorpay(options);
-    paymentObject.open();
-  };
-
-  const saveAppointment = async (paymentResponse: any) => {
-    setLoading(true);
+  const handlePaymentSuccess = async (response: any) => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const user_id = user?.id || null;
-
     const { error } = await supabase.from("appointments").insert([
       {
-        user_id,
+        user_id: user?.id,
         patient_name: patientName,
         counselor_name: counselor,
         booking_date: date,
         booking_time: time,
         booking_status: "confirmed",
-        amount: 500,
+        amount,
         payment_status: "paid",
         payment_method: "razorpay",
-        transaction_id: paymentResponse.razorpay_payment_id,
+        transaction_id: response.razorpay_payment_id,
         created_at: new Date().toISOString(),
       },
     ]);
 
-    setLoading(false);
-
-    if (error) {
-      console.error(error);
-      toast.error(error.message || "Failed to save appointment");
-    } else {
-      toast.success("Appointment booked & payment successful!");
-      setPatientName("");
-      setCounselor("");
-      setDate("");
-      setTime("");
-    }
+    if (error) toast.error(error.message);
+    else toast.success("Appointment booked successfully!");
+    setOpenHandler(false); 
   };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!patientName || !counselor || !date || !time) {
-      toast.error("Please fill all details");
-      return;
-    }
-    await handlePayment();
-  };
-
+  
   return (
     <Box
       sx={{
         minHeight: "100vh",
-        backgroundImage: `url(${bg})`,
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${bg})`, 
         backgroundSize: "cover",
         backgroundPosition: "center",
-        backgroundColor: "rgba(10,19,22,0.75)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        p: 2,
+        p: 3, 
       }}
     >
-      <motion.div
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
+      <Paper
+        elevation={10} 
+        sx={{
+          p: { xs: 3, md: 6 }, 
+          borderRadius: "16px", 
+          maxWidth: "450px", 
+          width: "100%",
+          bgcolor: "rgba(255, 255, 255, 0.95)", 
+          backdropFilter: "blur(5px)",
+        }}
       >
-        <Paper
-          elevation={8}
+        <Typography
+          variant="h4" 
+          component="h1"
+          gutterBottom 
           sx={{
-            p: { xs: 4, md: 6 },
-            borderRadius: "12px",
-            maxWidth: "500px",
-            width: "100%",
-            backgroundColor: "rgba(227, 233, 236, 0.9)",
+            fontFamily: "'Poppins', sans-serif",
+            color: "#25697fff",
+            fontWeight: 600,
+            textAlign: "center",
+            mb: 4,
           }}
         >
-          <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
-            Book an Appointment
-          </Typography>
+          Book Your Session
+        </Typography>
 
-          <form onSubmit={handleSubmit}>
-            <Stack spacing={3}>
-              <TextField
-                label="Patient Name"
-                variant="filled"
-                required
-                value={patientName}
-                onChange={(e) => setPatientName(e.target.value)}
-                InputProps={{ disableUnderline: true }}
-                sx={{
-                  backgroundColor: "#0a1316",
-                  borderRadius: "4px",
-                  "& .MuiInputBase-input": { color: "white" },
-                }}
-              />
-
-              <TextField
-                label="Counselor Name"
-                variant="filled"
-                required
-                value={counselor}
-                onChange={(e) => setCounselor(e.target.value)}
-                InputProps={{ disableUnderline: true }}
-                sx={{
-                  backgroundColor: "#0a1316",
-                  borderRadius: "4px",
-                  "& .MuiInputBase-input": { color: "white" },
-                }}
-              />
-
-              <TextField
-                label="Booking Date"
-                type="date"
-                variant="filled"
-                required
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                InputProps={{ disableUnderline: true }}
-                sx={{
-                  backgroundColor: "#0a1316",
-                  borderRadius: "4px",
-                  "& .MuiInputBase-input": { color: "white" },
-                }}
-              />
-
-              <TextField
-                label="Booking Time"
-                type="time"
-                variant="filled"
-                required
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                InputProps={{ disableUnderline: true }}
-                sx={{
-                  backgroundColor: "#0a1316",
-                  borderRadius: "4px",
-                  "& .MuiInputBase-input": { color: "white" },
-                }}
-              />
-
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={loading}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+           
+            if (patientName && counselor && date && time) {
+                setOpenPayment(true);
+            } else {
+                toast.error("Please fill in all appointment details.");
+            }
+          }}
+        >
+          <Stack spacing={3}>
+            <TextField
+              fullWidth
+              label="Patient Name"
+              variant="outlined"
+              value={patientName}
+              onChange={(e) => setPatientName(e.target.value)}
+              required
+            />
+            <TextField
+              fullWidth
+              label="Counselor"
+              variant="outlined"
+              value={counselor}
+              onChange={(e) => setCounselor(e.target.value)}
+              required
+            />
+            <Stack direction="row" spacing={2}> {/* Group date and time */}
+                <TextField
                   fullWidth
-                  sx={{
-                    backgroundColor: "#678e0bff",
-                    py: 1.5,
-                    fontWeight: "bold",
-                    borderRadius: "6px",
-                    "&:hover": { backgroundColor: "#ac4040ff" },
-                  }}
-                >
-                  {loading ? "Processing..." : "Book & Pay"}
-                </Button>
-              </motion.div>
+                  label="Date"
+                  type="date"
+                  variant="outlined"
+                  InputLabelProps={{ shrink: true }}
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  required
+                />
+                <TextField
+                  fullWidth
+                  label="Time"
+                  type="time"
+                  variant="outlined"
+                  InputLabelProps={{ shrink: true }}
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  required
+                />
             </Stack>
-          </form>
-        </Paper>
-      </motion.div>
+
+            <Button
+              type="submit"
+              variant="contained"
+              size="large" 
+              sx={{
+                mt: 2, 
+                bgcolor: "#407a14ff", 
+                "&:hover": {
+                    bgcolor: "#722909ff",
+                }
+              }}
+            >
+              Book & Pay ({amount} INR)
+            </Button>
+          </Stack>
+        </form>
+      </Paper>
+
+      {/*  Payment Dialog */}
+      <Payment
+        open={openPayment}
+        amount={amount}
+        // loading={false}
+        onClose={() => setOpenPayment(false)}
+        onConfirm={handleConfirmPayment}
+      />
+
+      {/*  Razorpay Logic */}
+      <PaymentHandler
+        open={openHandler}
+        amount={amount}
+        patientName={patientName}
+        counselor={counselor}
+        onSuccess={handlePaymentSuccess}
+        onClose={() => setOpenHandler(false)}
+      />
     </Box>
   );
 };
@@ -236,7 +185,7 @@ const AppointmentForm: React.FC = () => {
 export default AppointmentForm;
 
 
-
+// // ------ RAZORPAY ---- //
 
 // import React, { useState } from "react";
 // import {
@@ -247,9 +196,10 @@ export default AppointmentForm;
 //   TextField,
 //   Typography,
 // } from "@mui/material";
-// import { motion } from "framer-motion";
 // import { toast } from "sonner";
 // import bg from "../assets/BookForm/bg.jpg";
+// import Payment from "./Payment";
+// import PaymentHandler from "./PaymentHandler";
 // import { supabase } from "../lib/supabaseClients";
 
 // const AppointmentForm: React.FC = () => {
@@ -257,43 +207,38 @@ export default AppointmentForm;
 //   const [counselor, setCounselor] = useState("");
 //   const [date, setDate] = useState("");
 //   const [time, setTime] = useState("");
-//   const [loading, setLoading] = useState(false);
+//   const [openPayment, setOpenPayment] = useState(false);
+//   const [amount] = useState(500);
+//   const [openHandler, setOpenHandler] = useState(false);
 
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     setLoading(true);
+//   const handleConfirmPayment = () => {
+//     setOpenPayment(false);
+//     setOpenHandler(true);
+//   };
 
-//     // Get logged-in user (optional)
+//   const handlePaymentSuccess = async (response: any) => {
 //     const {
 //       data: { user },
 //     } = await supabase.auth.getUser();
 
-//     const user_id = user?.id || null;
-
-//     // Insert into Supabase
 //     const { error } = await supabase.from("appointments").insert([
 //       {
-//         user_id,
+//         user_id: user?.id,
 //         patient_name: patientName,
 //         counselor_name: counselor,
 //         booking_date: date,
 //         booking_time: time,
-//         booking_status: "pending",
+//         booking_status: "confirmed",
+//         amount,
+//         payment_status: "paid",
+//         payment_method: "razorpay",
+//         transaction_id: response.razorpay_payment_id,
+//         created_at: new Date().toISOString(),
 //       },
 //     ]);
 
-//     setLoading(false);
-
-//     if (error) {
-//       console.error(error);
-//       toast.error(error.message || "Failed to book appointment");
-//     } else {
-//       toast.success("Appointment booked successfully!");
-//       setPatientName("");
-//       setCounselor("");
-//       setDate("");
-//       setTime("");
-//     }
+//     if (error) toast.error(error.message);
+//     else toast.success("Appointment booked successfully!");
 //   };
 
 //   return (
@@ -302,126 +247,77 @@ export default AppointmentForm;
 //         minHeight: "100vh",
 //         backgroundImage: `url(${bg})`,
 //         backgroundSize: "cover",
-//         backgroundPosition: "center",
-//         backgroundColor: "rgba(10,19,22,0.75)",
 //         display: "flex",
 //         justifyContent: "center",
 //         alignItems: "center",
-//         p: 2,
 //       }}
 //     >
-//       <motion.div
-//         initial={{ opacity: 0, y: -50 }}
-//         animate={{ opacity: 1, y: 0 }}
-//         transition={{ duration: 0.7 }}
-//       >
-//         <Paper
-//           elevation={8}
-//           sx={{
-//             p: { xs: 4, md: 6 },
-//             borderRadius: "12px",
-//             maxWidth: "500px",
-//             width: "100%",
-//             backgroundColor: "rgba(227, 233, 236, 0.9)",
+//       <Paper sx={{ p: 4, borderRadius: "40px" }}>
+//         <Typography 
+//         sx={{fontFamily: "'Poppins', serif", color: "#02476fff", fontSize: "45px", fontWeight: "55px"}}>
+//           To be free to book appointment
+//         </Typography>
+
+//         <form
+//           onSubmit={(e) => {
+//             e.preventDefault();
+//             setOpenPayment(true);
 //           }}
 //         >
-//           <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
-//             Book an Appointment
-//           </Typography>
+//           <Stack spacing={2}>
+//             <TextField
+//               label="Patient Name"
+//               value={patientName}
+//               onChange={(e) => setPatientName(e.target.value)}
+//             />
+//             <TextField
+//               label="Counselor"
+//               value={counselor}
+//               onChange={(e) => setCounselor(e.target.value)}
+//             />
+//             <TextField
+//               label="Date"
+//               type="date"
+//               InputLabelProps={{ shrink: true }}
+//               value={date}
+//               onChange={(e) => setDate(e.target.value)}
+//             />
+//             <TextField
+//               label="Time"
+//               type="time"
+//               InputLabelProps={{ shrink: true }}
+//               value={time}
+//               onChange={(e) => setTime(e.target.value)}
+//             />
 
-//           <form onSubmit={handleSubmit}>
-//             <Stack spacing={3}>
-//               {/* Patient Name */}
-//               <TextField
-//                 label="Patient Name"
-//                 variant="filled"
-//                 required
-//                 value={patientName}
-//                 onChange={(e) => setPatientName(e.target.value)}
-//                 InputProps={{ disableUnderline: true }}
-//                 sx={{
-//                   backgroundColor: "#0a1316",
-//                   borderRadius: "4px",
-//                   "& .MuiInputBase-input": { color: "white" },
-//                   "& .MuiInputLabel-root": { color: "grey.400" },
-//                 }}
-//               />
+//             <Button type="submit" variant="contained">
+//               Book & Pay
+//             </Button>
+//           </Stack>
+//         </form>
+//       </Paper>
 
-//               {/* Counselor Name */}
-//               <TextField
-//                 label="Counselor Name"
-//                 variant="filled"
-//                 required
-//                 value={counselor}
-//                 onChange={(e) => setCounselor(e.target.value)}
-//                 InputProps={{ disableUnderline: true }}
-//                 sx={{
-//                   backgroundColor: "#0a1316",
-//                   borderRadius: "4px",
-//                   "& .MuiInputBase-input": { color: "white" },
-//                   "& .MuiInputLabel-root": { color: "grey.400" },
-//                 }}
-//               />
+//       {/* 💳 Payment Dialog */}
+//       <Payment
+//         open={openPayment}
+//         amount={amount}
+//         loading={false}
+//         onClose={() => setOpenPayment(false)}
+//         onConfirm={handleConfirmPayment}
+//       />
 
-//               {/* Booking Date */}
-//               <TextField
-//                 label="Booking Date"
-//                 type="date"
-//                 variant="filled"
-//                 required
-//                 value={date}
-//                 onChange={(e) => setDate(e.target.value)}
-//                 InputLabelProps={{ shrink: true }}
-//                 InputProps={{ disableUnderline: true }}
-//                 sx={{
-//                   backgroundColor: "#0a1316",
-//                   borderRadius: "4px",
-//                   "& .MuiInputBase-input": { color: "white" },
-//                   "& .MuiInputLabel-root": { color: "grey.400" },
-//                 }}
-//               />
-
-//               {/* Booking Time */}
-//               <TextField
-//                 label="Booking Time"
-//                 type="time"
-//                 variant="filled"
-//                 required
-//                 value={time}
-//                 onChange={(e) => setTime(e.target.value)}
-//                 InputLabelProps={{ shrink: true }}
-//                 InputProps={{ disableUnderline: true }}
-//                 sx={{
-//                   backgroundColor: "#0a1316",
-//                   borderRadius: "4px",
-//                   "& .MuiInputBase-input": { color: "white" },
-//                   "& .MuiInputLabel-root": { color: "grey.400" },
-//                 }}
-//               />
-
-//               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-//                 <Button
-//                   type="submit"
-//                   variant="contained"
-//                   disabled={loading}
-//                   fullWidth
-//                   sx={{
-//                     backgroundColor: "#678e0bff",
-//                     py: 1.5,
-//                     fontWeight: "bold",
-//                     borderRadius: "6px",
-//                     "&:hover": { backgroundColor: "#ac4040ff" },
-//                   }}
-//                 >
-//                   {loading ? "Booking..." : "Book Appointment"}
-//                 </Button>
-//               </motion.div>
-//             </Stack>
-//           </form>
-//         </Paper>
-//       </motion.div>
+//       {/* ⚡ Razorpay Logic */}
+//       <PaymentHandler
+//         open={openHandler}
+//         amount={amount}
+//         patientName={patientName}
+//         counselor={counselor}
+//         onSuccess={handlePaymentSuccess}
+//         onClose={() => setOpenHandler(false)}
+//       />
 //     </Box>
 //   );
 // };
 
 // export default AppointmentForm;
+
